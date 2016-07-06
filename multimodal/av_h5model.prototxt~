@@ -1,6 +1,4 @@
 name: "face_h5_model"
-# feature fusion at higher level
-# (1, 375)--(1, 1024)--concate--(1, 1399)
 layer {
     name: "data"
     type: "HDF5Data"
@@ -11,7 +9,7 @@ layer {
     phase: TRAIN
   }
   hdf5_data_param {
-    source: "av_train.txt"
+    source: "/home/sai/code/frame_play/caffe_net/av_train.txt"
     batch_size: 250
     shuffle:true
   }
@@ -27,7 +25,7 @@ layer {
     phase: TEST
   }
   hdf5_data_param {
-    source: "av_test.txt"
+    source: "/home/sai/code/frame_play/caffe_net/av_test.txt"
     batch_size: 250
     shuffle:true
   }
@@ -158,10 +156,28 @@ layer {
   top: "conv3"
 }
 
+# Flatten layer
+layer {
+        name: "flatten"
+        type: "Flatten"
+        bottom: "conv3"
+        top: "conv3_flatten"
+}
+
+# concatenate layer
+layer{
+    name: "concatenate"
+    type:"Concat"
+    bottom:"audio"
+    bottom:"conv3_flatten"
+    top:"concate"
+}
+
+
 layer {
   name: "fc6"
   type: "InnerProduct"
-  bottom: "conv3"
+  bottom: "concate"
   top: "fc6"
   param {
     lr_mult: 1
@@ -184,66 +200,30 @@ layer {
   }
 }
 
-# audio part 
-layer {
-  name: "audio_fc"
-  type: "InnerProduct"
-  bottom: "audio"
-  top: "audio"
-  param {
-    lr_mult: 1
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
-  inner_product_param {
-    num_output: 375
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.001
-    }
-  }
-}
-
-# concatenate layer
-layer{
-    name: "concatenate"
-    type:"Concat"
-    bottom:"audio"
-    bottom:"fc6"
-    top:"concate"
-}
-
-
 layer {
         name: "drop_fc6"
         type: "Dropout"
-        bottom: "concate"
-        top: "concate"
+        bottom: "fc6"
+        top: "fc6"
         dropout_param { 
                 dropout_ratio:0.8
         }
+        
         
        
 }
 layer {
   name: "ReLU6"
   type: "ReLU"
-  bottom: "concate"
-  top: "concate"
+  bottom: "fc6"
+  top: "fc6"
 }
 
 
 layer {
   name: "fc7"
   type: "InnerProduct"
-  bottom: "concate"
+  bottom: "fc6"
   top: "fc7"
   param {
     lr_mult: 1

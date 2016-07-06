@@ -9,7 +9,7 @@ layer {
     phase: TRAIN
   }
   hdf5_data_param {
-    source: "/home/sai/code/frame_play/caffe_net/av_train.txt"
+    source: "av_train.txt"
     batch_size: 250
     shuffle:true
   }
@@ -25,7 +25,7 @@ layer {
     phase: TEST
   }
   hdf5_data_param {
-    source: "/home/sai/code/frame_play/caffe_net/av_test.txt"
+    source: "av_test.txt"
     batch_size: 250
     shuffle:true
   }
