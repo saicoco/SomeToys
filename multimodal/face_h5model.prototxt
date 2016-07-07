@@ -1,17 +1,14 @@
 name: "face_h5_model"
-# feature fusion at higher level
-# decision_level_2
 layer {
     name: "data"
     type: "HDF5Data"
     top: "images"
     top: "labels"
-    top: "audio"
     include {
     phase: TRAIN
   }
   hdf5_data_param {
-    source: "/home/sai/code/frame_play/caffe_net/av_train.txt"
+    source: "/home/sai/code/frame_play/caffe_net/bbt_train.txt"
     batch_size: 250
     shuffle:true
   }
@@ -22,12 +19,11 @@ layer {
     type: "HDF5Data"
     top: "images"
     top: "labels"
-    top: "audio"
     include {
     phase: TEST
   }
   hdf5_data_param {
-    source: "/home/sai/code/frame_play/caffe_net/av_test.txt"
+    source: "/home/sai/code/frame_play/caffe_net/bbt_test.txt"
     batch_size: 250
     shuffle:true
   }
@@ -344,6 +340,7 @@ layer {
                 }
         }
 }
+
 layer {
   name: "ReLU4"
   type: "ReLU"
@@ -371,11 +368,7 @@ layer {
       std: 0.01
     }
   }
-  dropout_param{
-        dropout_ratio:0.8
-  }
 }
-
 # batchNorm
 layer {
         name: "fc6_bn"
@@ -401,11 +394,22 @@ layer {
 }
 
 layer {
-        name: "relu_fc6"
-        type: "ReLU"
+        name: "drop_fc6"
+        type: "Dropout"
         bottom: "fc6"
         top: "fc6"
+        dropout_param { 
+                dropout_ratio:0.8
+        }     
 }
+
+layer {
+  name: "ReLU6"
+  type: "ReLU"
+  bottom: "fc6"
+  top: "fc6"
+}
+
 
 layer {
   name: "fc7"
@@ -421,7 +425,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 5
+    num_output: 6
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -432,7 +436,6 @@ layer {
     }
   }
 }
-
 # batchNorm
 layer {
         name: "fc7_bn"
@@ -456,170 +459,11 @@ layer {
                 }
         }
 }
-# audio part 
-layer {
-  name: "audio_fc"
-  type: "InnerProduct"
-  bottom: "audio"
-  top: "audio"
-  param {
-    lr_mult: 1
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
-  inner_product_param {
-    num_output: 375
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-  }
-  dropout_param{
-        dropout_ratio:0.8
-  }
-}
-
-# batchNorm
-layer {
-        name: "audio_bn"
-        type: "BatchNorm"
-        bottom: "audio"
-        top: "audio"
-        batch_norm_param {
-               use_global_stats: false 
-        }
-}
-layer {
-        name: "audio_scale"
-        type: "Scale"
-        bottom: "audio"
-        top: "audio"
-        scale_param {
-                bias_term: true
-                bias_filler {
-                        type: "constant"
-                        value: 0.001
-                }
-        }
-}
-layer {
-        name: "relu_audio_fc"
-        type: "ReLU"
-        bottom: "audio"
-        top: "audio"
-}
-
-layer {
-  name: "audio_fc1"
-  type: "InnerProduct"
-  bottom: "audio"
-  top: "audio_fc1"
-  param {
-    lr_mult: 1
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
-  inner_product_param {
-    num_output: 5
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-  }
-}
-
-# batchNorm
-layer {
-        name: "audio_fc1_bn"
-        type: "BatchNorm"
-        bottom: "audio_fc1"
-        top: "audio_fc1"
-        batch_norm_param {
-               use_global_stats: false 
-        }
-}
-layer {
-        name: "audio_fc1_scale"
-        type: "Scale"
-        bottom: "audio_fc1"
-        top: "audio_fc1"
-        scale_param {
-                bias_term: true
-                bias_filler {
-                        type: "constant"
-                        value: 0.001
-                }
-        }
-}
-# concatenate layer
-layer{
-    name: "concatenate"
-    type:"Concat"
-    bottom:"audio_fc1"
-    bottom:"fc7"
-    top:"concate"
-}
-
-layer {
-  name: "concate_fc"
-  type: "InnerProduct"
-  bottom: "concate"
-  top: "concate_fc"
-  param {
-    lr_mult: 1
-    decay_mult: 0
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
-  inner_product_param {
-    num_output: 5
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0.001
-    }
-  }
-}
-
-# batchNorm
-layer {
-        name: "concate_fc_bn"
-        type: "BatchNorm"
-        bottom: "concate_fc"
-        top: "concate_fc"
-        batch_norm_param {
-               use_global_stats: false 
-        }
-}
-layer {
-        name: "concate_fc_scale"
-        type: "Scale"
-        bottom: "concate_fc"
-        top: "concate_fc"
-        scale_param {
-                bias_term: true
-                bias_filler {
-                        type: "constant"
-                        value: 0.001
-                }
-        }
-}
 
 layer {
   name: "accuracy"
   type: "Accuracy"
-  bottom: "concate_fc"
+  bottom: "fc7"
   bottom: "labels"
   top: "accuracy"
   
@@ -627,7 +471,7 @@ layer {
 layer {
   name: "loss"
   type: "SoftmaxWithLoss"
-  bottom: "concate_fc"
+  bottom: "fc7"
   bottom: "labels"
   top: "loss"
 }
