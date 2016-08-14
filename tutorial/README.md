@@ -86,7 +86,7 @@ response.xpath('//div/@class').extract()
 * `re()`: 正则表达式提取信息
 
 ### 跟随链接爬取
-提出代码:
+贴出代码:
 ```python
 import scrapy
 
@@ -111,7 +111,7 @@ class DmozSpider(scrapy.Spider):
             item['link'] = sel.xpath('a/@href').extract()
             item['desc'] = sel.xpath('text()').extract()
             yield item
-```　　
+```
 
 利用`scrapy.Request()`方法实现跟随链接并调用对应方法。
 
