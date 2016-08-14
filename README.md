@@ -14,3 +14,6 @@ bias置于Scale中，BatchNorm对无偏置权重乘积进行norm，在Scale中�
 
 ### python和matlab版本DCA
 * 利用python灵活性，可将其用于深度学习的训练过程中
+
+### scrapy tutorial
+* 学习scrapy框架
