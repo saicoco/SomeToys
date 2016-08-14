@@ -117,3 +117,7 @@ class DmozSpider(scrapy.Spider):
 
 ### 保存爬取结果
 命令`scrapy crawl dmoz -o items.json`,当然这是简单保存方法，复杂可使用`pipelines.py`定义。
+
+
+### Tips
+在爬去新浪微博，github时，遇到了robot的阻止，z这是个需要解决的问题。
