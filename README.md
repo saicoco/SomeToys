@@ -17,3 +17,12 @@ bias置于Scale中，BatchNorm对无偏置权重乘积进行norm，在Scale中�
 
 ### scrapy tutorial
 * 学习scrapy框架
+
+### porn images classify
+* 利用vgg分类性感图片和非性感图片
+
+### txt2xml
+* 将txt格式文件转换为voc xml
+
+### pycaffe
+* 利用pycaffe实现lenet，prototxt
