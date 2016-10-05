@@ -1,0 +1,10 @@
+layer{
+name:'mylayer'
+type:'Python'
+top:'images'
+python_param{
+    module:'MyPythonLayer'
+    layer:'myPythonLayer'
+    param_str:"'source_dir': '/home/sai/code/face_detection/train/lfw_5590','target_size': 224,'batch_size': 50"
+}
+}
