@@ -25,4 +25,10 @@ bias置于Scale中，BatchNorm对无偏置权重乘积进行norm，在Scale中�
 * 将txt格式文件转换为voc xml
 
 ### pycaffe
-* 利用pycaffe实现lenet，prototxt
+* 利用pycaffe实现lenet，prototxt  
+
+### tf_learn  
+* 利用tensorflow实现cnn, rnn  
+
+### to_lmdb  
+* 自定义lmdb,包括proto编写编译
