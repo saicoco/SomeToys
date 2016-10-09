@@ -1,0 +1,7 @@
+message Audio{
+    optional int32 length = 1;
+    optional int32 channels = 2;
+    optional bytes data = 3;
+    optional int32 label = 4;
+    repeated float float_data = 6;
+}
