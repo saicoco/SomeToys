@@ -1,0 +1,14 @@
+train_net: "conv_level.prototxt"
+test_net: "test.prototxt"
+test_iter: 10
+test_interval: 100
+base_lr: 0.001
+display: 10
+max_iter: 2000
+lr_policy: "step"
+momentum: 0.9
+weight_decay: 0.0005
+stepsize: 500
+snapshot: 500
+snapshot_prefix: "./snapshot/"
+solver_mode: GPU

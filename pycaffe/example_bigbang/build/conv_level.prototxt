@@ -1,0 +1,497 @@
+layer{
+    name: "audio_visual_data_layer"
+    type: "Python"
+    top: "images"
+    top: "audio"
+    top: "labels"
+    python_param{
+        module: 'py_data_layer'
+        layer: 'audiovisualLayer'
+        param_str: "'batch_size': 128,'data_dir': '../data/BingBang/','train': True"
+    }
+    include{
+        phase: TRAIN
+    }
+}
+
+
+################################
+############ conv1 #############
+################################
+layer{
+    name: "conv1"
+    type: "Convolution"
+    bottom: "images"
+    top: "conv1"
+    convolution_param{
+        num_output: 48
+        kernel_size: 15
+        pad: 0
+        stride: 1
+        weight_filler{
+            type: "gaussian"
+            std: 0.001
+        }
+        bias_filler{
+            type: "constant"
+            value: 0.001
+        }
+    }
+}
+
+layer{
+    name: "batch_conv1"
+    type: "BatchNorm"
+    bottom: "conv1"
+    top: "batch_conv1"
+    batch_norm_param{
+        use_global_stats: false
+    }
+}
+
+layer{
+    name: "scale_conv1"
+    type: "Scale"
+    bottom: "batch_conv1"
+    top: "scale_conv1"
+    scale_param{
+        bias_term: true
+    }
+}
+
+layer{
+    name: "relu1"
+    type: "ReLU"
+    bottom: "scale_conv1"
+    top: "scale_conv1"
+}
+
+################################
+############ conv2 #############
+################################
+layer{
+    name: "conv2"
+    type: "Convolution"
+    bottom: "scale_conv1"
+    top: "conv2"
+    convolution_param{
+        num_output: 256
+        kernel_size: 3
+        pad: 1
+        stride: 2
+        weight_filler{
+            type: "gaussian"
+            std: 0.001
+        }
+        bias_filler{
+            type: "constant"
+            value: 0.001
+        }
+    }
+}
+
+layer{
+    name: "batch_conv2"
+    type: "BatchNorm"
+    bottom: "conv2"
+    top: "batch_conv2"
+    batch_norm_param{
+        use_global_stats: false
+    }
+}
+
+layer{
+    name: "scale_conv2"
+    type: "Scale"
+    bottom: "batch_conv2"
+    top: "scale_conv2"
+    scale_param{
+        bias_term: true
+    }
+}
+
+layer{
+    name: "relu2"
+    type: "ReLU"
+    bottom: "scale_conv2"
+    top: "scale_conv2"
+}
+
+################################
+############ conv3 #############
+################################
+layer{
+    name: "conv3"
+    type: "Convolution"
+    bottom: "scale_conv2"
+    top: "conv3"
+    convolution_param{
+        num_output: 256
+        kernel_size: 3
+        pad: 0
+        stride: 1
+        weight_filler{
+            type: "gaussian"
+            std: 0.001
+        }
+        bias_filler{
+            type: "constant"
+            value: 0.001
+        }
+    }
+}
+
+layer{
+    name: "batch_conv3"
+    type: "BatchNorm"
+    bottom: "conv3"
+    top: "batch_conv3"
+    batch_norm_param{
+        use_global_stats: false
+    }
+}
+
+layer{
+    name: "scale_conv3"
+    type: "Scale"
+    bottom: "batch_conv3"
+    top: "scale_conv3"
+    scale_param{
+        bias_term: true
+    }
+}
+
+layer{
+    name: "relu3"
+    type: "ReLU"
+    bottom: "scale_conv3"
+    top: "scale_conv3"
+}
+
+################################
+############ conv4 #############
+################################
+layer{
+    name: "conv4"
+    type: "Convolution"
+    bottom: "scale_conv3"
+    top: "conv4"
+    convolution_param{
+        num_output: 256
+        kernel_size: 3
+        pad: 0
+        stride: 1
+        weight_filler{
+            type: "gaussian"
+            std: 0.001
+        }
+        bias_filler{
+            type: "constant"
+            value: 0.001
+        }
+    }
+}
+
+layer{
+    name: "batch_conv4"
+    type: "BatchNorm"
+    bottom: "conv4"
+    top: "batch_conv4"
+    batch_norm_param{
+        use_global_stats: false
+    }
+}
+
+layer{
+    name: "scale_conv4"
+    type: "Scale"
+    bottom: "batch_conv4"
+    top: "scale_conv4"
+    scale_param{
+        bias_term: true
+    }
+}
+
+layer{
+    name: "relu4"
+    type: "ReLU"
+    bottom: "scale_conv4"
+    top: "scale_conv4"
+}
+
+################################
+############ conv5 #############
+################################
+layer{
+    name: "conv5"
+    type: "Convolution"
+    bottom: "scale_conv4"
+    top: "conv5"
+    convolution_param{
+        num_output: 256
+        kernel_size: 3
+        pad: 1
+        stride: 2
+        weight_filler{
+            type: "gaussian"
+            std: 0.001
+        }
+        bias_filler{
+            type: "constant"
+            value: 0.001
+        }
+    }
+}
+
+layer{
+    name: "batch_conv5"
+    type: "BatchNorm"
+    bottom: "conv5"
+    top: "batch_conv5"
+    batch_norm_param{
+        use_global_stats: false
+    }
+}
+
+layer{
+    name: "scale_conv5"
+    type: "Scale"
+    bottom: "batch_conv5"
+    top: "scale_conv5"
+    scale_param{
+        bias_term: true
+    }
+}
+
+layer{
+    name: "relu5"
+    type: "ReLU"
+    bottom: "scale_conv5"
+    top: "scale_conv5"
+}
+
+################################
+########## tile/reshape ########
+################################
+layer{
+    name: "audio_repeate"
+    type: "Tile"
+    bottom: "audio"
+    top: "audio_tiled"
+    tile_param{
+        axis: 1
+        tiles: 49 #(7*7)
+    }
+}
+
+layer{
+    name: "audio_reshape"
+    type: "Reshape"
+    bottom: "audio_tiled"
+    top: "audio_reshape"
+    reshape_param{
+        shape{
+            dim: 0
+            dim: -1
+            dim: 7
+            dim: 7
+        }
+    }
+}
+
+################################
+########## conv_fusion #########
+################################
+layer{
+    name: "conv_fusion"
+    type: "Concat"
+    bottom: "audio_reshape"
+    bottom: "scale_conv5"
+    top: "fusion_conv"
+    concat_param{
+        axis: 1
+    }
+}
+
+################################
+############ conv6 #############
+################################
+layer{
+    name: "conv6"
+    type: "Convolution"
+    bottom: "fusion_conv"
+    top: "conv6"
+    convolution_param{
+        num_output: 1024
+        kernel_size: 7
+        pad: 0
+        stride: 1
+        weight_filler{
+            type: "gaussian"
+            std: 0.001
+        }
+        bias_filler{
+            type: "constant"
+            value: 0.001
+        }
+    }
+}
+
+layer{
+    name: "batch_conv6"
+    type: "BatchNorm"
+    bottom: "conv6"
+    top: "batch_conv6"
+    batch_norm_param{
+        use_global_stats: false
+    }
+}
+
+layer{
+    name: "scale_conv6"
+    type: "Scale"
+    bottom: "batch_conv6"
+    top: "scale_conv6"
+    scale_param{
+        bias_term: true
+    }
+}
+
+layer{
+    name: "relu6"
+    type: "ReLU"
+    bottom: "scale_conv6"
+    top: "scale_conv6"
+}
+
+################################
+############ FC1-layer #########
+################################
+layer{
+    name: "fc1"
+    type: "InnerProduct"
+    bottom: "scale_conv6"
+    top: "fc1"
+    inner_product_param{
+        num_output: 1024
+        weight_filler{
+            type: "gaussian"
+            std: 0.001
+        }
+        bias_filler{
+            type: "constant"
+            std: 0.001
+        }
+    }
+}
+
+layer{
+    name: "batch_fc1"
+    type: "BatchNorm"
+    bottom: "fc1"
+    top: "batch_fc1"
+    batch_norm_param{
+        use_global_stats: false
+    }
+}
+
+layer{
+    name: "scale_fc1"
+    type: "Scale"
+    bottom: "batch_fc1"
+    top: "scale_fc1"
+    scale_param{
+        bias_term: true
+    }
+}
+
+layer{
+    name: "relu"
+    type: "ReLU"
+    bottom: "scale_fc1"
+    top: "scale_fc1"
+}
+
+################################
+############ dropout ###########
+################################
+layer{
+    name: "dropout"
+    type: "Dropout"
+    bottom: "scale_fc1"
+    top: "scale_fc1"
+    dropout_param{
+        dropout_ratio: 0.5
+    }
+    include{
+        phase: TRAIN
+    }
+}
+
+################################
+############ FC2-layer #########
+################################
+layer{
+    name: "fc2"
+    type: "InnerProduct"
+    bottom: "scale_fc1"
+    top: "fc2"
+    inner_product_param{
+        num_output: 5
+        weight_filler{
+            type: "gaussian"
+            std: 0.001
+        }
+        bias_filler{
+            type: "constant"
+            std: 0.001
+        }
+    }
+}
+
+layer{
+    name: "batch_fc2"
+    type: "BatchNorm"
+    bottom: "fc2"
+    top: "batch_fc2"
+    batch_norm_param{
+        use_global_stats: false
+    }
+}
+
+layer{
+    name: "scale_fc2"
+    type: "Scale"
+    bottom: "batch_fc2"
+    top: "scale_fc2"
+    scale_param{
+        bias_term: true
+    }
+}
+
+################################
+############ loss-layer ########
+################################
+layer{
+    name: "loss"
+    type: "SoftmaxWithLoss"
+    bottom: "scale_fc2"
+    bottom: "labels"
+    top: "loss"
+}
+
+###################s#############
+############ ACC-layer #########
+################################
+layer{
+    name: "Acc"
+    type: "Accuracy"
+    bottom: "scale_fc2"
+    bottom: "labels"
+    top: "acc"
+}
+
+
+
+
+
